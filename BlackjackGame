@@ -1,0 +1,100 @@
+from art import logo
+import random
+
+
+def calculate_score(cards):
+    score = 0
+    for numbers in cards:
+        score += numbers
+    return score
+
+
+def get_card(cards):
+    return random.choice(cards)
+
+
+def computer_function(comp_cards):
+    end_of_game = False
+    while not end_of_game:
+        if calculate_score(comp_cards) < 17:
+            comp_cards.append(get_card(cards_list))
+        elif calculate_score(comp_cards) > 21:
+            if len(comp_cards) == 2:
+                for item in comp_cards:
+                    n = 0
+                    if item == 11:
+                        comp_cards[n] = 1
+            end_of_game = True
+        else:
+            end_of_game = True
+
+
+cards_list = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
+
+end_of_blackjack = False
+get_another_card = ""
+
+while not end_of_blackjack:
+    play_blackjack = input("Welcome to the blackjack game. Type 'y' to play and 'n' to exit: ")
+    if play_blackjack == 'y':
+        print(logo)
+        player_cards = []
+        computer_cards = []
+        player_cards.append(get_card(cards_list))
+        player_cards.append(get_card(cards_list))
+        computer_cards.append(get_card(cards_list))
+        print(f"    Your cards: {player_cards}, current score: {calculate_score(player_cards)}.")
+        print(f"    Computer's first card: {calculate_score(computer_cards)}")
+        the_end_of_getting_new_card = False
+        while not the_end_of_getting_new_card:
+            get_another_card = input("Type 'y' to get another card, type 'n' to pass: ")
+            if get_another_card == 'y':
+                player_cards.append(get_card(cards_list))
+                print(f"    Your cards: {player_cards}, current score: {calculate_score(player_cards)}.")
+                print(f"    Computer's first card: {calculate_score(computer_cards)}")
+                if calculate_score(player_cards) > 21:
+                    if len(player_cards) == 2:
+                        for card in player_cards:
+                            i = 0
+                            if card == 11:
+                                player_cards[i] = 1
+                    computer_function(computer_cards)
+                    print(f"    Your final hand: {player_cards}, final score: {calculate_score(player_cards)}.")
+                    print(
+                        f"    Computer's final hand: {computer_cards}, final score: {calculate_score(computer_cards)}.")
+                    print("You went over. You lose.")
+                    the_end_of_getting_new_card = True
+                elif calculate_score(player_cards) == 21 and len(player_cards) == 2:
+                    if calculate_score(computer_cards) != 21:
+                        for card in player_cards:
+                            if card == 11:
+                                the_end_of_getting_new_card = True
+                                print("You have a blackjack. You win.")
+                    else:
+                        for card in computer_cards:
+                            if card == 11:
+                                the_end_of_getting_new_card = True
+                                print("Computer has a blackjack. You lose.")
+
+            else:
+                the_end_of_getting_new_card = True
+        if get_another_card == 'n':
+            print(f"    Your final hand: {player_cards}, final score: {calculate_score(player_cards)}.")
+            if calculate_score(computer_cards) < 17:
+                computer_function(computer_cards)
+            print(f"    Computer's final hand: {computer_cards}, final score: {calculate_score(computer_cards)}.")
+            if calculate_score(computer_cards) > calculate_score(player_cards) and calculate_score(
+                    computer_cards) <= 21:
+                print("You lose.")
+            elif calculate_score(computer_cards) > 21 >= calculate_score(player_cards):
+                print("Computer went over. You win.")
+            elif calculate_score(computer_cards) == calculate_score(player_cards):
+                print("Draw.")
+            elif calculate_score(player_cards) > calculate_score(computer_cards) and calculate_score(
+                    player_cards) <= 21:
+                print("You win.")
+
+    else:
+        end_of_blackjack = True
+        print(logo)
+        print("Thank you for playing our blackjack game. Goodbye.")

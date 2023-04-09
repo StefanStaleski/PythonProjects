@@ -1,0 +1,54 @@
+import requests
+import json
+
+# Retrieves details from link
+url = "https://interview-task-api.mca.dev/qr-scanner-codes/alpha-qr-gFpwhsQ8fkY1"
+response = requests.get(url)
+data = json.loads(response.content)
+
+
+def print_products(new_list, number):
+    """Prints the products from the inputted dictionary"""
+    print(f"... {new_list[number]['name']}")
+    print(f"    Price: ${new_list[number]['price']}")
+    print(f"    {new_list[number]['description'][0:10]}...")
+
+
+def weight_present(weight, receipt_list, number):
+    """Checks if there is weight in the dictionary and if there is, it prints it out"""
+    if weight:
+        print(f"    Weight: {receipt_list[number]['weight']}g")
+    else:
+        print(f"    Weight: N/A")
+
+
+def print_receipt():
+    """Prints the receipt from the details that were provided from the link"""
+    new_receipt = sorted(data, key=lambda x: x['name'])
+    domestic_sum = 0
+    domestic_count = 0
+    imported_count = 0
+    imported_sum = 0
+    print(f". Domestic")
+    for i in range(0, len(new_receipt)):
+        is_weight_present = "weight" in new_receipt[i]
+        if new_receipt[i]['domestic']:
+            print_products(new_receipt, i)
+            domestic_sum += new_receipt[i]['price']
+            domestic_count += 1
+            weight_present(is_weight_present, new_receipt, i)
+    print(f". Imported")
+    for i in range(0, len(new_receipt)):
+        is_weight_present = "weight" in new_receipt[i]
+        if not new_receipt[i]['domestic']:
+            print_products(new_receipt, i)
+            imported_sum += new_receipt[i]['price']
+            imported_count += 1
+            weight_present(is_weight_present, new_receipt, i)
+    print(f"Domestic cost: ${domestic_sum}")
+    print(f"Imported cost: ${imported_sum}")
+    print(f"Domestic count: {domestic_count}")
+    print(f"Imported count: {imported_count}")
+
+
+print_receipt()

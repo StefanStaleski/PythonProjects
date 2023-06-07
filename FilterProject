@@ -1,0 +1,111 @@
+import json
+import sys
+from datetime import datetime
+
+
+def filter_function():
+    """
+    This function is used in order to filter a specific review file that has Date, Rate, and also you can choose
+    if you would like to prioritize the dictionaries that have text.
+    """
+    try:
+        with open('C:/Users/User/PycharmProjects/FilterProject/reviews.json', 'r') as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        print("The file was not found. Please make sure the path is correct.")
+        print("Program will now exit.")
+        sys.exit()
+    except json.JSONDecodeError:
+        print("The JSON format is invalid. Please make sure the JSON file contains valid data.")
+        print("Program will now exit.")
+        sys.exit()
+    # Filter for reviews
+
+    # Create a function to sort by Text
+
+    def sort_by_text(sort_data):
+        """
+        This function is used to prioritize the dictionaries that have text inside the 'reviewText' key.
+        """
+        if order_by_rating == "Highest First":
+            return sorted(sort_data, key=lambda x: x.get('reviewText') if x.get('reviewText') else '', reverse=True)
+        else:
+            return sorted(sort_data, key=lambda x: (not x.get('reviewText'), x.get('rating', -999)))
+
+    # Create a function to sort by Rating
+
+    def sort_by_rating(sort_data, rating_type):
+        """
+        This function is used to sort the dictionaries by their rating type, if the rating type is Highest First, the
+        dictionaries will be set in descending order and if the rating type is Lowest First, they will be in
+        ascending order.
+        """
+        if rating_type == "Highest First":
+            return sorted(sort_data, key=lambda x: x['rating'], reverse=True)
+        else:
+            return sorted(sort_data, key=lambda x: x['rating'])
+
+    # Create a function to sort by Date
+    def sort_by_date(sort_data, date_type):
+        """
+        This function is used to sort the dictionaries that are inside the list by date. By choosing Newest First,
+        the function will sort them in descending order and by choosing Oldest First, they will be in ascending
+        order.
+        """
+        if date_type == "Newest First":
+            return sorted(sort_data, key=lambda x: datetime.fromisoformat(x['reviewCreatedOnDate']), reverse=True)
+        else:
+            return sorted(sort_data, key=lambda x: datetime.fromisoformat(x['reviewCreatedOnDate']))
+
+    def print_data(sort_data, min_rating):
+        """
+        This function checks the minimum rating that was provided and prints the dictionaries ID's, ReviewText if it is
+        specified by the user by saying "Yes" in the input of the prioritization text question, and it also prints the
+        Rating and Date of the dictionaries that are inside the provided list.
+        """
+        for item in sort_data:
+            if item['rating'] >= min_rating:
+                print(f"ID: {item['id']}")
+                if item['reviewText'] and prioritize_by_text == "Yes":
+                    print(f"Review Text: {item['reviewText']}")
+                print(f"Rating: {item['rating']}")
+                print(f"Date: {item['reviewCreatedOnDate']}")
+                print("")
+
+    def check_valid_input():
+        """This function checks if the inputs that were provided by the user are valid for the program to execute
+        correctly.
+        """
+        print("")
+        if order_by_rating not in ("Highest First", "Lowest First"):
+            print("Invalid Rating Input. You need to choose between 'Highest First' and 'Lowest First'.")
+            print("Program will now exit.")
+            sys.exit()
+        elif minimum_rating > 5 or minimum_rating <= 0:
+            print("Invalid rating number. You need to choose between '1, 2, 3, 4, 5'.")
+            print("Program will now exit.")
+            sys.exit()
+        elif prioritize_by_text not in ("Yes", "No"):
+            print("Invalid Text Prioritization input. You need to choose between 'Yes' or 'No'.")
+            print("Program will now exit.")
+            sys.exit()
+        elif order_by_date not in ("Newest First", "Oldest First"):
+            print("Invalid Date Type. You need to choose between 'Newest First' and 'Oldest First'.")
+            print("Program will now exit.")
+            sys.exit()
+
+    order_by_rating = input("Choose how you would like to order it by rating: Highest First or Lowest First?: ")
+    minimum_rating = int(input("Choose what the minimum rating for your filter will be: 1, 2, 3, 4 or 5: "))
+    order_by_date = input("Choose how you would like to order it by date: Newest First or Oldest First: ")
+    prioritize_by_text = input("Would you like to prioritize by text? Write Yes or No: ")
+
+    check_valid_input()
+    sorted_data = sort_by_date(data, order_by_date)
+    sorted_data = sort_by_rating(sorted_data, order_by_rating)
+    if prioritize_by_text == "Yes":
+        print(prioritize_by_text)
+        sorted_data = sort_by_text(sorted_data)
+    print_data(sorted_data, minimum_rating)
+
+
+filter_function()
